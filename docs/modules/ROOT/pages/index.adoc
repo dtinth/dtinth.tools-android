@@ -1,0 +1,9 @@
+= dtinth’s Tools
+
+*A personal Android enhancement app* that I use on my device.
+
+* xref:morse.adoc[Morse code notifier] vibrates my phone when I receive a notification.
+
+* xref:exfiltrate.adoc[Notification exfiltrator] sends the received notifications into a remote server. It has end-to-end encryption, and aims to be resilient. The primary use case is to integrate with https://dt.in.th/automatron.html:[my personal chatbot, expense tracker, and home automator, “automatron”].
+
+TIP: Sounds cool and want something like this? I encourage you to create your own personal Android enhancement app. Feel free to https://github.com/dtinth/dtinth.tools-android[look at my code] and reuse parts of it!
