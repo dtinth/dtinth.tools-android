@@ -1,6 +1,12 @@
 # dtinth’s Tools
 
-An personal Android application that I use on my device.
+**A personal Android enhancement app** that I use on my device.
+
+- [**Morse code notifier**](#morse-code-notifier) vibrates my phone when I receive a notification.
+
+- [**Notification exfiltrator**](#notification-exfiltrator) sends the received notifications into a remote server. It has end-to-end encryption, and aims to be resilient. The primary use case is to integrate with [my personal chatbot, expense tracker, and home automator, “automatron”](https://dt.in.th/automatron.html).
+
+Sounds cool and want something like this? I encourage you to create your own personal Android enhancement app. Feel free to look at my code and reuse parts of it!
 
 ## Morse code notifier
 
@@ -16,7 +22,7 @@ Sends notifications received on the phone to an external server.
 
 - **End-to-end encryption:** Notification data is [sealed](https://libsodium.gitbook.io/doc/public-key_cryptography/sealed_boxes). The private key corresponding to the configured public key is required to decrypt the data.
 
-- **Resilient:** [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) is used to schedule reliable, asynchronous tasks. Notifications are stored locally, in encrypted form, so that it survives app exit and device restarts. They will be dispatched to the server when [the device is connected to the internet](https://developer.android.com/reference/androidx/work/NetworkType#CONNECTED). In case of server errors (5xx response), it will be retried with a backoff strategy. This is all handled by WorkManager.
+- **Resilient:** [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) is used to schedule reliable, asynchronous tasks. Notifications are stored locally, in encrypted form, so that it survives app exit, network disconnection, and device restarts. They will be dispatched to the server when [the device is connected to the internet](https://developer.android.com/reference/androidx/work/NetworkType#CONNECTED). In case of server errors (5xx response), it will be retried with a backoff strategy. This is all handled by WorkManager.
 
 ### Integration guide
 
