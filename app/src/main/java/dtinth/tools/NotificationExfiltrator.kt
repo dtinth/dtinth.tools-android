@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import androidx.work.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -70,6 +71,9 @@ class ExfiltrateWork(context: Context, workerParams: WorkerParameters) :
                 if (responseCode >= 500) {
                     return Result.retry()
                 }
+            } catch (error: IOException) {
+                Log.d("ExfiltrateWork", "IO exception", error)
+                return Result.retry()
             } finally {
                 connection.disconnect()
             }
