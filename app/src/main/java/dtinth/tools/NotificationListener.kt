@@ -6,13 +6,8 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.preference.PreferenceManager
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.lang.StringBuilder
 
 class NotificationListener : NotificationListenerService() {
     override fun onNotificationPosted(statusBarNotification: StatusBarNotification) {
@@ -55,11 +50,6 @@ class NotificationListener : NotificationListenerService() {
         Log.d("dtinth/NotificationListener", text)
         sharedPreferences.edit().putString("noti_recent", out).commit()
     }
-}
-
-interface NotificationProcessor {
-    fun getName(): String
-    fun process(notificationData: NotificationData, context: Context): String
 }
 
 class NotificationBlocklist(val name: String) {
@@ -109,10 +99,3 @@ class NotificationExfiltrator : NotificationProcessor {
     }
 }
 
-@Serializable
-data class NotificationData(
-    val packageName: String,
-    val title: String,
-    val text: String,
-    val time: String = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
-)
