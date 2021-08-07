@@ -1,11 +1,18 @@
 package dtinth.tools
 
 import android.app.Notification
+import android.content.Context
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.preference.PreferenceManager
-
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.lang.StringBuilder
 
 class NotificationListener : NotificationListenerService() {
     override fun onNotificationPosted(statusBarNotification: StatusBarNotification) {
@@ -13,25 +20,32 @@ class NotificationListener : NotificationListenerService() {
         val title = notification.extras.get(Notification.EXTRA_TITLE)?.toString() ?: ""
         val text = notification.extras.get(Notification.EXTRA_TEXT)?.toString() ?: ""
         val packageName = statusBarNotification.packageName
-        val textBasis = "[$packageName] $title"
 
-        val vibrateOutcome = vibrate(textBasis, title)
-        log("$textBasis $vibrateOutcome")
-    }
+        val notificationData = NotificationData(packageName, title, text)
 
-    private fun vibrate(textBasis: String, title: String): String {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val blocklist = sharedPreferences.getString("morse_blocklist", "")?.split("\n")
-        if (blocklist != null) {
-            for (c in blocklist) {
-                val item = c.trim()
-                if (item != "" && textBasis.contains(item)) {
-                    return "[blocked by pattern `$item`]"
-                }
-            }
+        val blocklist = NotificationBlocklist("pipeline_blocklist")
+        val pattern = blocklist.getBlockingPattern(notificationData, this)
+        if (pattern != null) {
+            return
         }
-        val morseCodeVibrator = MorseCodeVibrator(this, title)
-        return morseCodeVibrator.vibrate()
+
+        val notificationProcessors = listOf<NotificationProcessor>(
+            MorseCodeNotifier(),
+            NotificationExfiltrator()
+        )
+
+        val result = StringBuilder("[$packageName] $title")
+        for (p in notificationProcessors) {
+            result.append(" [${p.getName()}: ")
+            try {
+                result.append(p.process(notificationData, this))
+            } catch (e: Exception) {
+                result.append("Error: ").append(e.message)
+                Log.d("NotificationListener", e.message, e)
+            }
+            result.append("]")
+        }
+        log("$result")
     }
 
     private fun log(text: String) {
@@ -42,3 +56,63 @@ class NotificationListener : NotificationListenerService() {
         sharedPreferences.edit().putString("noti_recent", out).commit()
     }
 }
+
+interface NotificationProcessor {
+    fun getName(): String
+    fun process(notificationData: NotificationData, context: Context): String
+}
+
+class NotificationBlocklist(val name: String) {
+    fun getBlockingPattern(notificationData: NotificationData, context: Context): String? {
+        val textBasis = "[${notificationData.packageName}] ${notificationData.title}"
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val blocklist = sharedPreferences.getString(name, "")?.split("\n")
+        if (blocklist != null) {
+            for (c in blocklist) {
+                val item = c.trim()
+                if (item != "" && textBasis.contains(item)) {
+                    return item
+                }
+            }
+        }
+        return null
+    }
+}
+
+class MorseCodeNotifier : NotificationProcessor {
+    override fun getName(): String {
+        return "morse"
+    }
+
+    override fun process(notificationData: NotificationData, context: Context): String {
+        val blocklist = NotificationBlocklist("morse_blocklist")
+        val pattern = blocklist.getBlockingPattern(notificationData, context)
+        if (pattern != null) {
+            return "[blocked by pattern `$pattern`]"
+        }
+        val morseCodeVibrator = MorseCodeVibrator(context, notificationData.title)
+        return morseCodeVibrator.vibrate()
+    }
+}
+
+class NotificationExfiltrator : NotificationProcessor {
+    override fun getName(): String {
+        return "exfiltrate"
+    }
+
+    override fun process(notificationData: NotificationData, context: Context): String {
+        val data = notificationData
+            .let { Json.encodeToString(it) }
+            .let { Sealer().seal(it) }
+        Log.d("exfiltrate", data)
+        return "OK"
+    }
+}
+
+@Serializable
+data class NotificationData(
+    val packageName: String,
+    val title: String,
+    val text: String,
+    val time: String = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+)

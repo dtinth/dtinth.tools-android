@@ -1,6 +1,18 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory android:title="Pipeline">
+        <Preference
+            android:key="noti_recent"
+            android:title="View recent notifications" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="pipeline_blocklist"
+            android:selectAllOnFocus="true"
+            android:singleLine="false"
+            android:title="Notification blocklist"
+            android:summary="When matched, the notification will not be processed at all. It will not show in the log either. Use this to block noisy notifications." />
+    </PreferenceCategory>
     <PreferenceCategory app:title="Morse code notifier">
         <SwitchPreference
             android:defaultValue="false"
@@ -11,7 +23,8 @@
             android:key="morse_blocklist"
             android:selectAllOnFocus="true"
             android:singleLine="false"
-            android:title="Notification text blocklist" />
+            android:title="Notification blocklist"
+            android:summary="When matched, will skip vibrating." />
         <EditTextPreference
             android:defaultValue="80"
             android:inputType="number"
@@ -19,9 +32,27 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="dit duration (milliseconds)" />
-        <Preference
-            android:key="noti_recent"
-            android:title="View recent notifications" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Exfiltrator">
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="exfiltrate_blocklist"
+            android:selectAllOnFocus="true"
+            android:singleLine="false"
+            android:title="Notification blocklist"
+            android:summary="When matched, will skip exfiltrating." />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="exfiltrate_public_key"
+            android:selectAllOnFocus="true"
+            android:singleLine="false"
+            android:title="Recipient public key" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="exfiltrate_endpoint"
+            android:selectAllOnFocus="true"
+            android:singleLine="false"
+            android:title="Recipient HTTP endpoint" />
     </PreferenceCategory>
 
 </PreferenceScreen>

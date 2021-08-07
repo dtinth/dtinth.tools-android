@@ -23,7 +23,7 @@ class MorseCodeVibrator(private val context: Context, private val text: String) 
             result.set(0, result[0] + 1000)
             result.addAll(0, listOf(0, 16, 32, 16, 32, 16, 32, 16))
             vibrator.vibrate(result.toLongArray(), -1)
-            "=> $initials"
+            "=> $builder"
         } else {
             "[no result]"
         }

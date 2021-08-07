@@ -10,7 +10,7 @@ class MorseCodeBuilder(private val period: Int = 80, private val maxChars: Int =
         ).toTypedArray()
     private val list: MutableList<Boolean> = LinkedList()
     private val addedCode = StringBuilder()
-    private var addedChars = 0
+    private val addedChars = StringBuilder()
 
     fun add(text: String) {
         for (element in text) {
@@ -20,24 +20,24 @@ class MorseCodeBuilder(private val period: Int = 80, private val maxChars: Int =
 
     private fun add(c: Char) {
         if (c in 'a'..'z') {
-            addCode(chars[c - 'a'])
+            addCode(chars[c - 'a'], c)
             pause()
         }
         if (c in 'A'..'Z') {
-            addCode(chars[c - 'A'])
+            addCode(chars[c - 'A'], c)
             pause()
         }
     }
 
-    private fun addCode(code: String) {
-        if (addedChars >= maxChars) {
+    private fun addCode(code: String, char: Char) {
+        if (addedChars.length >= maxChars) {
             return
         }
         for (c in code) {
             if (c == '.') dit()
             if (c == '-') dah()
         }
-        addedChars++
+        addedChars.append(char)
     }
 
     private fun dit() {
@@ -64,7 +64,6 @@ class MorseCodeBuilder(private val period: Int = 80, private val maxChars: Int =
         var now: Long = 0
         var state = false
         val durations: MutableList<Long> = LinkedList()
-        Log.d("MorseCodeBuilder", addedCode.toString())
         for (status in list) {
             if (state != status) {
                 durations.add(now)
@@ -74,5 +73,9 @@ class MorseCodeBuilder(private val period: Int = 80, private val maxChars: Int =
             now += period.toLong()
         }
         return durations
+    }
+
+    override fun toString(): String {
+        return "${addedChars.toString()} (${addedCode.toString()})"
     }
 }
