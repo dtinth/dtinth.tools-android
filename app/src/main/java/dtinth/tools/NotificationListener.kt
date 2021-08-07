@@ -6,8 +6,6 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.preference.PreferenceManager
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class NotificationListener : NotificationListenerService() {
     override fun onNotificationPosted(statusBarNotification: StatusBarNotification) {
@@ -66,36 +64,6 @@ class NotificationBlocklist(val name: String) {
             }
         }
         return null
-    }
-}
-
-class MorseCodeNotifier : NotificationProcessor {
-    override fun getName(): String {
-        return "morse"
-    }
-
-    override fun process(notificationData: NotificationData, context: Context): String {
-        val blocklist = NotificationBlocklist("morse_blocklist")
-        val pattern = blocklist.getBlockingPattern(notificationData, context)
-        if (pattern != null) {
-            return "[blocked by pattern `$pattern`]"
-        }
-        val morseCodeVibrator = MorseCodeVibrator(context, notificationData.title)
-        return morseCodeVibrator.vibrate()
-    }
-}
-
-class NotificationExfiltrator : NotificationProcessor {
-    override fun getName(): String {
-        return "exfiltrate"
-    }
-
-    override fun process(notificationData: NotificationData, context: Context): String {
-        val data = notificationData
-            .let { Json.encodeToString(it) }
-            .let { Sealer().seal(it) }
-        Log.d("exfiltrate", data)
-        return "OK"
     }
 }
 
