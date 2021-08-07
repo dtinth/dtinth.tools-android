@@ -11,10 +11,9 @@ val sodium = SodiumAndroid()
 val lazySodium: LazySodiumAndroid = LazySodiumAndroid(sodium, StandardCharsets.UTF_8)
 
 class Sealer {
-    val recipientPublicKey = Key.fromBase64String("1nh5s77GGDTURB27UG3S7gC338AI3knOOYOpDLWYTyw=")
-    val box = lazySodium as Box.Lazy
-
-    public fun seal(message: String): String {
+    fun seal(message: String, publicKey: String): String {
+        val recipientPublicKey = Key.fromBase64String(publicKey)
+        val box = lazySodium as Box.Lazy
         return box.cryptoBoxSealEasy(message, recipientPublicKey)
     }
 }
