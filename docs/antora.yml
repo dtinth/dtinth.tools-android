@@ -1,5 +1,5 @@
 name: dtinth.tools-android
-version: main
+version: master
 title: 'dtinth’s Tools (Android App)'
 nav:
 - modules/ROOT/nav.adoc
