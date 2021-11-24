@@ -37,6 +37,7 @@ class NotificationExfiltrator : NotificationProcessor {
                     .build()
             )
             .addTag("exfiltrate")
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
         WorkManager.getInstance(context).enqueue(request)
         return request.id.toString()
