@@ -54,6 +54,14 @@
             android:selectAllOnFocus="true"
             android:singleLine="false"
             android:title="Recipient HTTP endpoint" />
+        <Preference
+            android:key="exfiltrate_inspect"
+            android:title="Inspect work queue"
+            android:summary="See stats." />
+        <Preference
+            android:key="exfiltrate_cancel"
+            android:title="Cancel all pending work"
+            android:summary="Use when something seriously wrong." />
     </PreferenceCategory>
 
 </PreferenceScreen>

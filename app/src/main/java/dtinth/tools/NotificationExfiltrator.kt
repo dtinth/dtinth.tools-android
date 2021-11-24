@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.preference.PreferenceManager
 import androidx.work.*
+import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.IOException
@@ -37,7 +38,6 @@ class NotificationExfiltrator : NotificationProcessor {
                     .build()
             )
             .addTag("exfiltrate")
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
         WorkManager.getInstance(context).enqueue(request)
         return request.id.toString()
