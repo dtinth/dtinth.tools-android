@@ -33,6 +33,8 @@
             android:singleLine="true"
             android:title="dit duration (milliseconds)" />
     </PreferenceCategory>
+
+    <PreferenceCategory app:title="Notification exfiltrator">
         <EditTextPreference
             android:defaultValue=""
             android:key="exfiltrate_blocklist"
